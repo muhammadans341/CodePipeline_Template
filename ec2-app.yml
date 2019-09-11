@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters :
+  ec2InstanceType :
+    Type : String
+    Default: t2.micro
+  ec2InstanceKeyName :
+    Type : String
+    Default: "hamza-devops"
+  ec2InstanceImageId :
+    Type : String
+    Default: "ami-0b898040803850657"
+  ec2InstanceSecurityGroupIds:
+    Type: String
+    Default: "sg-05a9c2325f5e35deb"
+
+
+Resources :
+  ec2AppInstance :
+    Type : AWS::EC2::Instance
+    Properties :
+      ImageId: !Ref ec2InstanceImageId
+      InstanceType: !Ref ec2InstanceType
+      KeyName: !Ref ec2InstanceKeyName
+      SecurityGroupIds: !Split [",", !Ref ec2InstanceSecurityGroupIds ]
+      IamInstanceProfile: !ImportValue InstanceProfileForEC2
+      Tags:
+        -
+          Key: Name
+          Value: MyPappuInstance
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            sudo yum update -y aws-cfn-bootstrap
+            sudo amazon-linux-extras install nginx1.12
+            aws s3 cp s3://shahrozs3cfnapp . --recursive
+
+Outputs :
+  ec2AppInstanceId:
+    Value: !Ref ec2AppInstance
+    Export:
+      Name: !Sub '${AWS::StackName}-InstanceId'
