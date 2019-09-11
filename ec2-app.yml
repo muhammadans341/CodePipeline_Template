@@ -22,7 +22,7 @@ Resources :
       InstanceType: !Ref ec2InstanceType
       KeyName: !Ref ec2InstanceKeyName
       SecurityGroupIds: !Split [",", !Ref ec2InstanceSecurityGroupIds ]
-      IamInstanceProfile: !ImportValue InstanceProfileForEC2
+      IamInstanceProfile: !ImportValue all-roles-stack-InstanceProfile
       Tags:
         -
           Key: Name
